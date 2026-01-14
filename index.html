@@ -12,454 +12,865 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root{
-      --bg: #0a0a0a;
-      --bg2:#111111;
-      --card:#161616;
-      --text:#ffffff;
-      --muted:#a7a7a7;
-      --muted2:#7f7f7f;
-      --border:#2a2a2a;
-      --ease:cubic-bezier(.4,0,.2,1);
-      --container: 1200px;
-      --pad: 24px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    html { scroll-behavior: smooth; }
-    body{
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+    :root {
+      --bg: #000000;
+      --bg2: #0a0a0a;
+      --bg3: #111111;
+      --card: #161616;
+      --card-hover: #1f1f1f;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --text-muted2: #6b6b6b;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      --accent: #667eea;
+      --accent2: #f093fb;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1400px;
+      --pad: clamp(20px, 4vw, 40px);
+      --section-pad: clamp(80px, 12vw, 160px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      position: relative;
     }
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce){
+
+    @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-    }
-    a { color: inherit; }
-    .container{ max-width: var(--container); margin: 0 auto; padding: 0 var(--pad); }
-
-    /* top progress */
-    .scroll-indicator{
-      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-      background: #fff; z-index: 2000;
-      transition: width .12s linear;
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
 
-    /* nav */
-    .nav{
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 1500;
-      background: rgba(10,10,10,.72);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      transition: all .25s var(--ease);
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-    .nav.scrolled{
-      background: rgba(10,10,10,.92);
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 var(--pad);
     }
-    .nav-row{
-      display:flex; align-items:center; justify-content: space-between;
-      padding: 16px 0;
-      gap: 16px;
+
+    /* Scroll Progress */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 10000;
+      transition: width 0.1s linear;
     }
-    .brand{
-      display:flex; align-items:center; gap: 12px;
-      text-decoration:none;
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 5000;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.4s var(--ease);
+    }
+
+    .nav.scrolled {
+      background: rgba(0, 0, 0, 0.85);
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      gap: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-weight: 700;
+      font-size: 1.1rem;
       letter-spacing: -0.02em;
-      white-space: nowrap;
+      transition: opacity 0.3s var(--ease);
     }
-    .brand img{ height: 38px; width: auto; display:block; }
-    .links{ list-style:none; display:flex; gap: 28px; align-items:center; }
-    .links a{
-      text-decoration:none;
-      color: var(--muted);
-      font-weight: 500;
-      font-size: .95rem;
-      position: relative;
-      transition: color .2s var(--ease);
-    }
-    .links a:hover{ color: var(--text); }
-    .links a::after{
-      content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0%;
-      background: var(--text);
-      transition: width .25s var(--ease);
-    }
-    .links a:hover::after{ width:100%; }
-    .menu-toggle{
-      display:none;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
-      height: 42px; width: 42px;
-      cursor:pointer;
-      font-size: 18px;
-    }
-    .mobile-panel{
-      display:none;
-      border-top: 1px solid rgba(255,255,255,.08);
-      padding: 8px 0 16px;
-    }
-    .mobile-panel a{
-      display:block;
-      padding: 10px 0;
-      color: var(--muted);
-      text-decoration:none;
-      font-weight: 600;
-    }
-    .mobile-panel a:hover{ color: var(--text); }
 
-    /* hero */
-    .hero{
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      position: relative;
-      padding: 120px 0 64px;
-      overflow:hidden;
+    .brand:hover {
+      opacity: 0.8;
     }
-    .hero-3d{
-      position:absolute;
+
+    .brand img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      position: relative;
+      transition: color 0.3s var(--ease);
+      padding: 8px 0;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.4s var(--ease);
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease);
+    }
+
+    .menu-toggle:hover {
+      border-color: var(--border-hover);
+      background: var(--card);
+    }
+
+    .mobile-menu {
+      display: none;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.3s var(--ease);
+    }
+
+    .mobile-menu a:hover {
+      color: var(--text);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 140px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      opacity: .92;
     }
-    .hero-3d canvas{ width:100% !important; height:100% !important; display:block; }
-    .hero::before{
-      content:"";
-      position:absolute; inset: 0;
+
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
       background:
-        radial-gradient(circle at 15% 20%, rgba(102,126,234,.16) 0%, transparent 55%),
-        radial-gradient(circle at 85% 70%, rgba(240,147,251,.12) 0%, transparent 55%);
-      pointer-events:none;
+        radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.12) 0%, transparent 50%);
     }
-    .hero .inner{ position:relative; z-index:1; text-align:center; }
-    .hero .inner::after{
-      /* subtle glass plate behind hero copy */
-      content:"";
-      position:absolute;
-      inset: -22px;
-      background: rgba(10,10,10,.22);
-      border: 1px solid rgba(255,255,255,.08);
-      backdrop-filter: blur(10px);
-      z-index: -1;
-      opacity: .0;
-      transform: translateY(8px);
-      transition: opacity .35s var(--ease), transform .35s var(--ease);
+
+    .hero-3d {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.6;
     }
-    .hero:hover .inner::after{
-      opacity: 1;
-      transform: translateY(0);
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+      padding: 0 var(--pad);
     }
-    h1{
-      font-size: clamp(3rem, 7vw, 6rem);
+
+    .hero-greeting {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.2s both;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 800;
       line-height: 1.05;
       letter-spacing: -0.05em;
-      font-weight: 800;
-      margin-bottom: 14px;
-      animation: fadeUp .9s var(--ease) both;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.3s both;
     }
-    .sub{
-      font-size: clamp(1.1rem, 2.4vw, 1.8rem);
-      color: var(--muted);
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      color: var(--text-muted);
       font-weight: 400;
-      margin-bottom: 28px;
-      animation: fadeUp .9s var(--ease) .12s both;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.4s both;
     }
-    .cta{
-      display:flex; gap: 14px; justify-content:center; flex-wrap: wrap;
-      animation: fadeUp .9s var(--ease) .22s both;
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.5s both;
     }
-    .btn{
-      border: 2px solid #fff;
-      padding: 12px 22px;
-      text-decoration:none;
-      font-weight: 700;
-      transition: transform .18s var(--ease), background .18s var(--ease), color .18s var(--ease);
-      background: transparent;
-      color: var(--text);
-      border-radius: 0;
+
+    .btn {
+      padding: 16px 32px;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
       position: relative;
-      overflow:hidden;
+      overflow: hidden;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    .btn:hover{ transform: translateY(-2px); }
-    .btn.primary{ background:#fff; color:#0a0a0a; }
-    .btn.primary:hover{ background: #e8e8e8; }
-    .btn.ghost{ border-color: rgba(255,255,255,.25); color: var(--muted); }
-    .btn.ghost:hover{ border-color:#fff; color:#fff; }
 
-    /* sections */
-    section{ padding: 84px 0; }
-    .section-title{
-      font-size: clamp(2.1rem, 4vw, 3.25rem);
-      line-height: 1.15;
-      letter-spacing:-0.03em;
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: var(--text);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Sections */
+    section {
+      padding: var(--section-pad) 0;
+      position: relative;
+    }
+
+    .section-header {
+      margin-bottom: 60px;
+    }
+
+    .section-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: 800;
-      margin-bottom: 10px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .section-subtitle{
-      color: var(--muted);
-      font-size: 1.08rem;
-      max-width: 760px;
-    }
-    .divider{ border-top: 1px solid rgba(255,255,255,.08); }
 
-    /* about */
-    .about{ background: var(--bg2); }
-    .about-grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 40px;
-      margin-top: 36px;
+    .section-subtitle {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 700px;
+    }
+
+    /* About Section */
+    .about {
+      background: var(--bg2);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
       align-items: center;
     }
-    .about p{ color: var(--muted); font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px; }
-    .about-visual{
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--card);
-      overflow:hidden;
-    }
-    .about-visual img{
-      width:100%;
-      height:auto;
-      display:block;
-      transform: scale(1.02);
-      transition: transform .45s var(--ease);
-    }
-    .about-visual:hover img{ transform: scale(1.07); }
 
-    /* scrollers */
-    .scroller{
-      margin-top: 26px;
-      overflow:hidden;
-      border-top: 1px solid rgba(255,255,255,.08);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.02);
+    .about-text {
+      font-size: clamp(1rem, 1.2vw, 1.125rem);
+      color: var(--text-muted);
+      line-height: 1.9;
     }
-    .track{
-      display:flex;
-      gap: 16px;
-      padding: 18px 0;
+
+    .about-text p {
+      margin-bottom: 24px;
+    }
+
+    .about-visual {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+      aspect-ratio: 4/5;
+    }
+
+    .about-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease);
+    }
+
+    .about-visual:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Skills & Tools Scrollers */
+    .scroller-section {
+      background: var(--bg2);
+      padding: 60px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scroller-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .scroller-track {
+      display: flex;
+      gap: 24px;
+      padding: 32px 0;
       width: max-content;
-      animation: marquee 28s linear infinite;
+      animation: scroll 40s linear infinite;
       will-change: transform;
     }
-    .scroller:hover .track{ animation-play-state: paused; }
-    .pill{
-      border: 1px solid rgba(255,255,255,.12);
-      background: var(--card);
-      padding: 12px 18px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-      transition: transform .18s var(--ease), border-color .18s var(--ease);
+
+    .scroller-wrapper:hover .scroller-track {
+      animation-play-state: paused;
     }
-    .pill span{ color: var(--muted2); font-weight: 600; margin-left: 8px; }
-    .pill:hover{ transform: translateY(-2px); border-color:#fff; }
-    @keyframes marquee {
+
+    .scroller-item {
+      padding: 16px 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      transition: all 0.3s var(--ease);
+      backdrop-filter: blur(10px);
+    }
+
+    .scroller-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes scroll {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
 
-    /* experience */
-    .experience{ background: var(--bg2); }
-    .xp-list{ display:grid; gap: 18px; margin-top: 36px; }
-    .xp{
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--card);
-      padding: 22px;
-      transition: transform .18s var(--ease), border-color .18s var(--ease);
+    /* Experience Section */
+    .experience {
+      background: var(--bg2);
     }
-    .xp:hover{ transform: translateY(-3px); border-color:#fff; }
-    .xp-top{
-      display:flex; align-items:flex-start; justify-content: space-between;
-      gap: 14px; flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .xp h3{ font-size: 1.2rem; font-weight: 800; letter-spacing:-.02em; }
-    .xp .meta{ color: var(--muted); font-weight: 600; }
-    .xp .when{ color: var(--muted2); font-weight: 700; font-size: .95rem; }
-    .xp p{ color: var(--muted); line-height: 1.85; margin-top: 8px; }
 
-    /* projects */
-    .projects .category{ margin-top: 40px; }
-    .projects h3{
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing:-.02em;
+    .xp-list {
+      display: grid;
+      gap: 24px;
+    }
+
+    .xp-card {
+      padding: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: all 0.4s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .xp-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      transform: scaleY(0);
+      transition: transform 0.4s var(--ease);
+    }
+
+    .xp-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+    }
+
+    .xp-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .xp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .card{
-      position:relative;
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--card);
-      overflow:hidden;
-      cursor:pointer;
-      aspect-ratio: 4 / 3;
-      transition: transform .18s var(--ease), border-color .18s var(--ease);
-    }
-    .card:hover{ transform: translateY(-4px); border-color:#fff; }
-    .card img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-      transform: scale(1.02);
-      transition: transform .4s var(--ease);
-    }
-    .card:hover img{ transform: scale(1.09); }
-    .card .shade{
-      position:absolute; inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,0) 58%);
-      opacity: 0;
-      transition: opacity .2s var(--ease);
-    }
-    .card:hover .shade{ opacity: 1; }
 
-    /* modal */
-    .modal{
-      position:fixed; inset:0;
-      display:none;
-      align-items:center; justify-content:center;
-      z-index: 3000;
-      background: rgba(0,0,0,.92);
-      backdrop-filter: blur(12px);
-      padding: 24px;
-    }
-    .modal.active{ display:flex; }
-    .modal-inner{ position:relative; max-width: 94vw; max-height: 92vh; }
-    .modal-inner img{ max-width: 94vw; max-height: 92vh; object-fit: contain; display:block; }
-    .modal-close{
-      position:absolute;
-      top: -52px; right: 0;
-      width: 44px; height: 44px;
-      border: 1px solid rgba(255,255,255,.20);
-      background: rgba(22,22,22,.75);
-      color: #fff;
-      font-size: 22px;
-      cursor:pointer;
-      transition: background .18s var(--ease), transform .18s var(--ease), border-color .18s var(--ease);
-    }
-    .modal-close:hover{ background:#fff; color:#0a0a0a; border-color:#fff; transform: translateY(-1px); }
-
-    /* contact */
-    .contact{ background: var(--bg2); }
-    .contact-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      margin-top: 34px;
-    }
-    .info{
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--card);
-      padding: 22px;
-      display:grid;
-      gap: 14px;
-      align-content: start;
-    }
-    .label{
-      color: var(--muted2);
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      font-size: .78rem;
-      font-weight: 800;
-    }
-    .value a, .value span{
-      color: #fff;
-      text-decoration:none;
+    .xp-title {
+      font-size: 1.5rem;
       font-weight: 700;
-      font-size: 1.1rem;
+      margin-bottom: 8px;
     }
-    .value a:hover{ text-decoration: underline; }
-    form{
-      border: 1px solid rgba(255,255,255,.10);
-      background: var(--card);
-      padding: 22px;
-      display:grid;
-      gap: 14px;
-    }
-    .field{ display:grid; gap: 8px; }
-    input, textarea{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.25);
-      color: #fff;
-      padding: 12px 12px;
-      font: inherit;
-      outline:none;
-    }
-    input:focus, textarea:focus{ border-color:#fff; }
-    textarea{ min-height: 150px; resize: vertical; }
 
-    /* footer */
-    footer{
-      border-top: 1px solid rgba(255,255,255,.08);
-      padding: 36px 0;
+    .xp-meta {
+      color: var(--text-muted);
+      font-weight: 500;
     }
-    .footer-row{
-      display:flex; align-items:center; justify-content: space-between;
-      gap: 16px; flex-wrap: wrap;
-      color: var(--muted);
+
+    .xp-date {
+      color: var(--text-muted2);
       font-weight: 600;
+      font-size: 0.9rem;
     }
-    .socials{ display:flex; gap: 14px; }
-    .socials a{
-      text-decoration:none;
-      border: 1px solid rgba(255,255,255,.14);
-      padding: 10px 14px;
-      color:#fff;
-      background: rgba(255,255,255,.03);
-      transition: transform .18s var(--ease), border-color .18s var(--ease);
-    }
-    .socials a:hover{ transform: translateY(-2px); border-color:#fff; }
 
-    /* reveal */
-    .reveal{
+    .xp-description {
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* Projects Section */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .project-category {
+      margin-bottom: 80px;
+    }
+
+    .project-category-title {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--text);
+    }
+
+    .project-card {
+      position: relative;
+      aspect-ratio: 4/3;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all 0.4s var(--ease);
+    }
+
+    .project-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 60%);
       opacity: 0;
-      transform: translateY(18px);
-      transition: opacity .6s var(--ease), transform .6s var(--ease);
-    }
-    .reveal.on{ opacity: 1; transform: translateY(0); }
-
-    @keyframes fadeUp{
-      from{ opacity:0; transform: translateY(18px); }
-      to{ opacity:1; transform: translateY(0); }
+      transition: opacity 0.4s var(--ease);
     }
 
-    @media (max-width: 920px){
-      .about-grid{ grid-template-columns: 1fr; }
-      .contact-grid{ grid-template-columns: 1fr; }
-      .links{ display:none; }
-      .menu-toggle{ display:inline-flex; align-items:center; justify-content:center; }
-      .mobile-panel.open{ display:block; }
+    .project-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border-hover);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .project-card:hover::after {
+      opacity: 1;
+    }
+
+    .project-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease);
+    }
+
+    .project-card:hover img {
+      transform: scale(1.1);
+    }
+
+    /* Contact Section */
+    .contact {
+      background: var(--bg2);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 60px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .info-item {
+      padding: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: all 0.3s var(--ease);
+    }
+
+    .info-item:hover {
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+      transform: translateX(4px);
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .info-value a {
+      transition: color 0.3s var(--ease);
+    }
+
+    .info-value a:hover {
+      color: var(--accent);
+    }
+
+    .contact-form {
+      padding: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-input,
+    .form-textarea {
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font: inherit;
+      font-size: 1rem;
+      transition: all 0.3s var(--ease);
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      transition: all 0.3s var(--ease);
+    }
+
+    .social-link:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+      color: var(--accent);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease);
+    }
+
+    .modal-close:hover {
+      background: var(--card-hover);
+      border-color: var(--border-hover);
+      transform: rotate(90deg);
+    }
+
+    .modal-content img {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+
+    /* Reveal Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .about-grid,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --section-pad: 60px;
+      }
+
+      .hero {
+        padding: 120px 0 60px;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scroller-item {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="scroll-indicator" id="scrollIndicator"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
 
   <header class="nav" id="nav">
     <div class="container">
-      <div class="nav-row">
-        <a class="brand" href="#home" aria-label="Go to home">
+      <div class="nav-inner">
+        <a href="#home" class="brand">
           <img src="extracted_images/page_1_img_2.png" alt="Ankita Gurjar" />
         </a>
-        <nav aria-label="Primary">
-          <ul class="links">
+        <nav>
+          <ul class="nav-links">
             <li><a href="#about">About</a></li>
             <li><a href="#skills">Skills</a></li>
             <li><a href="#tools">Tools</a></li>
@@ -468,9 +879,9 @@
             <li><a href="#contact">Contact</a></li>
           </ul>
         </nav>
-        <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
       </div>
-      <div class="mobile-panel" id="mobilePanel" aria-label="Mobile navigation">
+      <div class="mobile-menu" id="mobileMenu">
         <a href="#about">About</a>
         <a href="#skills">Skills</a>
         <a href="#tools">Tools</a>
@@ -483,255 +894,357 @@
 
   <main id="home">
     <section class="hero">
-      <div class="hero-3d" aria-hidden="true" id="hero3d"></div>
-      <div class="container inner">
+      <div class="hero-bg"></div>
+      <div class="hero-3d" id="hero3d"></div>
+      <div class="hero-content">
+        <p class="hero-greeting">Hi, I'm</p>
         <h1>Ankita Gurjar</h1>
-        <p class="sub">Visual Designer • Branding • Social Creatives • UI/UX</p>
-        <div class="cta">
-          <a class="btn primary" href="#projects">View Work</a>
-          <a class="btn ghost" href="#contact">Get in Touch</a>
+        <p class="hero-subtitle">Visual Designer • Branding • Social Creatives • UI/UX</p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary">View Work</a>
+          <a href="#contact" class="btn btn-secondary">Get in Touch</a>
         </div>
       </div>
     </section>
 
-    <section class="about divider" id="about">
+    <section class="about" id="about">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">About Me</h2>
-          <p class="section-subtitle">I build striking, purposeful visuals that connect and convert.</p>
+        <div class="section-header reveal">
+          <span class="section-label">About Me</span>
+          <h2 class="section-title">I build striking, purposeful visuals that connect and convert.</h2>
+          <p class="section-subtitle">Crafting visual narratives that resonate and deliver results.</p>
         </div>
         <div class="about-grid">
-          <div class="reveal">
-            <p>I’m a Visual Designer with over four years of experience turning ideas into striking, purposeful visual experiences. With a strong command of the Adobe Creative Suite—Photoshop, Illustrator, After Effects, Premiere Pro, and Animate—I design with both precision and imagination, balancing aesthetics with impact.</p>
+          <div class="about-text reveal">
+            <p>I'm a Visual Designer with over four years of experience turning ideas into striking, purposeful visual experiences. With a strong command of the Adobe Creative Suite—Photoshop, Illustrator, After Effects, Premiere Pro, and Animate—I design with both precision and imagination, balancing aesthetics with impact.</p>
             <p>From crafting end-to-end, high-performing social media campaigns to shaping brand stories that connect and convert, I thrive at the intersection of creativity and strategy. My work spans innovative landing pages and websites, engaging infographics, visually compelling email templates, and polished print materials.</p>
-            <p>I also bring stories to life through seamless video editing, motion design, animations, and CGI—tailored to engage diverse audiences across platforms. I believe great design doesn’t just look good—it communicates, resonates, and delivers results.</p>
-            <p>Let’s collaborate to transform your vision into bold, memorable visual narratives that leave a lasting impression.</p>
+            <p>I also bring stories to life through seamless video editing, motion design, animations, and CGI—tailored to engage diverse audiences across platforms. I believe great design doesn't just look good—it communicates, resonates, and delivers results.</p>
+            <p>Let's collaborate to transform your vision into bold, memorable visual narratives that leave a lasting impression.</p>
           </div>
           <div class="about-visual reveal">
-            <img src="extracted_images/page_2_img_2.jpeg" alt="Portrait / work preview" />
+            <img src="extracted_images/page_2_img_2.jpeg" alt="Ankita Gurjar" />
           </div>
         </div>
       </div>
     </section>
 
-    <section class="divider" id="skills">
+    <section class="scroller-section" id="skills">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Skills & Expertise</h2>
-          <p class="section-subtitle">A fast-moving toolkit built across digital and visual mediums.</p>
+        <div class="section-header reveal">
+          <span class="section-label">Skills & Expertise</span>
+          <h2 class="section-title">A fast-moving toolkit built across digital and visual mediums.</h2>
         </div>
       </div>
-      <div class="scroller" aria-label="Skills scroller">
-        <div class="track" id="skillsTrack">
-          <div class="pill">Graphic Design <span>•</span></div>
-          <div class="pill">Social Creative <span>•</span></div>
-          <div class="pill">Video Editing <span>•</span></div>
-          <div class="pill">Conceptual Design <span>•</span></div>
-          <div class="pill">Party Flyer <span>•</span></div>
-          <div class="pill">Web Design <span>•</span></div>
-          <div class="pill">UI Design <span>•</span></div>
-          <div class="pill">GIF Creation <span>•</span></div>
-          <div class="pill">Infographic Creative <span>•</span></div>
+      <div class="scroller-wrapper">
+        <div class="scroller-track" id="skillsTrack">
+          <div class="scroller-item">Graphic Design</div>
+          <div class="scroller-item">Social Creative</div>
+          <div class="scroller-item">Video Editing</div>
+          <div class="scroller-item">Conceptual Design</div>
+          <div class="scroller-item">Party Flyer</div>
+          <div class="scroller-item">Web Design</div>
+          <div class="scroller-item">UI Design</div>
+          <div class="scroller-item">GIF Creation</div>
+          <div class="scroller-item">Infographic Creative</div>
         </div>
       </div>
     </section>
 
-    <section class="divider" id="tools">
+    <section class="scroller-section" id="tools">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Tools</h2>
-          <p class="section-subtitle">The stack I use to ship polished work quickly.</p>
+        <div class="section-header reveal">
+          <span class="section-label">Tools</span>
+          <h2 class="section-title">The stack I use to ship polished work quickly.</h2>
         </div>
       </div>
-      <div class="scroller" aria-label="Tools scroller">
-        <div class="track" id="toolsTrack">
-          <div class="pill">Adobe Photoshop <span>•</span></div>
-          <div class="pill">Adobe Illustrator <span>•</span></div>
-          <div class="pill">Adobe After Effects <span>•</span></div>
-          <div class="pill">Adobe Premiere Pro <span>•</span></div>
-          <div class="pill">Figma <span>•</span></div>
-          <div class="pill">Blender <span>•</span></div>
+      <div class="scroller-wrapper">
+        <div class="scroller-track" id="toolsTrack">
+          <div class="scroller-item">Adobe Photoshop</div>
+          <div class="scroller-item">Adobe Illustrator</div>
+          <div class="scroller-item">Adobe After Effects</div>
+          <div class="scroller-item">Adobe Premiere Pro</div>
+          <div class="scroller-item">Figma</div>
+          <div class="scroller-item">Blender</div>
         </div>
       </div>
     </section>
 
-    <section class="experience divider" id="experience">
+    <section class="experience" id="experience">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Work Experience</h2>
-          <p class="section-subtitle">Professional highlights across brand, content, and digital design.</p>
+        <div class="section-header reveal">
+          <span class="section-label">Work Experience</span>
+          <h2 class="section-title">Professional highlights across brand, content, and digital design.</h2>
         </div>
         <div class="xp-list">
-          <article class="xp reveal">
-            <div class="xp-top">
+          <article class="xp-card reveal">
+            <div class="xp-header">
               <div>
-                <h3>Visual Designer</h3>
-                <div class="meta">Creative Studio / Agency</div>
+                <h3 class="xp-title">Visual Designer</h3>
+                <div class="xp-meta">Creative Studio / Agency</div>
               </div>
-              <div class="when">2020 — Present</div>
+              <div class="xp-date">2020 — Present</div>
             </div>
-            <p>Designed brand identities, social media creatives, marketing visuals, and promotional videos. Built end-to-end campaign systems, created motion assets, and collaborated with teams to deliver high-impact visuals across platforms.</p>
+            <p class="xp-description">Designed brand identities, social media creatives, marketing visuals, and promotional videos. Built end-to-end campaign systems, created motion assets, and collaborated with teams to deliver high-impact visuals across platforms.</p>
           </article>
-          <article class="xp reveal">
-            <div class="xp-top">
+          <article class="xp-card reveal">
+            <div class="xp-header">
               <div>
-                <h3>Graphic Designer</h3>
-                <div class="meta">Freelance & Client Projects</div>
+                <h3 class="xp-title">Graphic Designer</h3>
+                <div class="xp-meta">Freelance & Client Projects</div>
               </div>
-              <div class="when">2019 — 2020</div>
+              <div class="xp-date">2019 — 2020</div>
             </div>
-            <p>Created unique, memorable logos and brand assets for clients across industries. Delivered print + digital creatives including posters, flyers, and social content with consistent visual identity.</p>
+            <p class="xp-description">Created unique, memorable logos and brand assets for clients across industries. Delivered print + digital creatives including posters, flyers, and social content with consistent visual identity.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="projects divider" id="projects">
+    <section class="projects" id="projects">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Projects & Design Work</h2>
-          <p class="section-subtitle">A curated selection across branding, typography, social creatives, concept design, UI/UX, menus, and flyers.</p>
+        <div class="section-header reveal">
+          <span class="section-label">Projects & Design Work</span>
+          <h2 class="section-title">A curated selection across branding, typography, social creatives, concept design, UI/UX, menus, and flyers.</h2>
         </div>
 
-        <div class="category reveal">
-          <h3>Logo Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_8_img_2.png"><span class="shade"></span><img src="extracted_images/page_8_img_2.png" alt="Logo design 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_3.png"><span class="shade"></span><img src="extracted_images/page_8_img_3.png" alt="Logo design 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_4.png"><span class="shade"></span><img src="extracted_images/page_8_img_4.png" alt="Logo design 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_5.png"><span class="shade"></span><img src="extracted_images/page_8_img_5.png" alt="Logo design 4" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_6.png"><span class="shade"></span><img src="extracted_images/page_8_img_6.png" alt="Logo design 5" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_7.png"><span class="shade"></span><img src="extracted_images/page_8_img_7.png" alt="Logo design 6" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_8_img_8.png"><span class="shade"></span><img src="extracted_images/page_8_img_8.png" alt="Logo design 7" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Logo Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_8_img_2.png">
+              <img src="extracted_images/page_8_img_2.png" alt="Logo design 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_3.png">
+              <img src="extracted_images/page_8_img_3.png" alt="Logo design 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_4.png">
+              <img src="extracted_images/page_8_img_4.png" alt="Logo design 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_5.png">
+              <img src="extracted_images/page_8_img_5.png" alt="Logo design 4" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_6.png">
+              <img src="extracted_images/page_8_img_6.png" alt="Logo design 5" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_7.png">
+              <img src="extracted_images/page_8_img_7.png" alt="Logo design 6" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_8_img_8.png">
+              <img src="extracted_images/page_8_img_8.png" alt="Logo design 7" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Brand Creatives</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_3_img_1.jpeg"><span class="shade"></span><img src="extracted_images/page_3_img_1.jpeg" alt="Brand creative 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_3_img_2.jpeg"><span class="shade"></span><img src="extracted_images/page_3_img_2.jpeg" alt="Brand creative 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_3_img_3.jpeg"><span class="shade"></span><img src="extracted_images/page_3_img_3.jpeg" alt="Brand creative 3" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Brand Creatives</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_3_img_1.jpeg">
+              <img src="extracted_images/page_3_img_1.jpeg" alt="Brand creative 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_3_img_2.jpeg">
+              <img src="extracted_images/page_3_img_2.jpeg" alt="Brand creative 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_3_img_3.jpeg">
+              <img src="extracted_images/page_3_img_3.jpeg" alt="Brand creative 3" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Poster Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_5_img_1.png"><span class="shade"></span><img src="extracted_images/page_5_img_1.png" alt="Poster 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_5_img_2.png"><span class="shade"></span><img src="extracted_images/page_5_img_2.png" alt="Poster 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_5_img_3.png"><span class="shade"></span><img src="extracted_images/page_5_img_3.png" alt="Poster 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_5_img_4.jpeg"><span class="shade"></span><img src="extracted_images/page_5_img_4.jpeg" alt="Poster 4" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_5_img_5.png"><span class="shade"></span><img src="extracted_images/page_5_img_5.png" alt="Poster 5" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_5_img_6.png"><span class="shade"></span><img src="extracted_images/page_5_img_6.png" alt="Poster 6" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_6_img_1.jpeg"><span class="shade"></span><img src="extracted_images/page_6_img_1.jpeg" alt="Poster 7" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_6_img_2.png"><span class="shade"></span><img src="extracted_images/page_6_img_2.png" alt="Poster 8" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_6_img_3.png"><span class="shade"></span><img src="extracted_images/page_6_img_3.png" alt="Poster 9" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Poster Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_5_img_1.png">
+              <img src="extracted_images/page_5_img_1.png" alt="Poster 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_5_img_2.png">
+              <img src="extracted_images/page_5_img_2.png" alt="Poster 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_5_img_3.png">
+              <img src="extracted_images/page_5_img_3.png" alt="Poster 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_5_img_4.jpeg">
+              <img src="extracted_images/page_5_img_4.jpeg" alt="Poster 4" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_5_img_5.png">
+              <img src="extracted_images/page_5_img_5.png" alt="Poster 5" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_5_img_6.png">
+              <img src="extracted_images/page_5_img_6.png" alt="Poster 6" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_6_img_1.jpeg">
+              <img src="extracted_images/page_6_img_1.jpeg" alt="Poster 7" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_6_img_2.png">
+              <img src="extracted_images/page_6_img_2.png" alt="Poster 8" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_6_img_3.png">
+              <img src="extracted_images/page_6_img_3.png" alt="Poster 9" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Typography Creative</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_4_img_1.jpeg"><span class="shade"></span><img src="extracted_images/page_4_img_1.jpeg" alt="Typography creative 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_4_img_2.jpeg"><span class="shade"></span><img src="extracted_images/page_4_img_2.jpeg" alt="Typography creative 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_4_img_3.jpeg"><span class="shade"></span><img src="extracted_images/page_4_img_3.jpeg" alt="Typography creative 3" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Typography Creative</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_4_img_1.jpeg">
+              <img src="extracted_images/page_4_img_1.jpeg" alt="Typography creative 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_4_img_2.jpeg">
+              <img src="extracted_images/page_4_img_2.jpeg" alt="Typography creative 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_4_img_3.jpeg">
+              <img src="extracted_images/page_4_img_3.jpeg" alt="Typography creative 3" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Concept Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_7_img_1.png"><span class="shade"></span><img src="extracted_images/page_7_img_1.png" alt="Concept design 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_7_img_2.png"><span class="shade"></span><img src="extracted_images/page_7_img_2.png" alt="Concept design 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_7_img_3.jpeg"><span class="shade"></span><img src="extracted_images/page_7_img_3.jpeg" alt="Concept design 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_7_img_4.jpeg"><span class="shade"></span><img src="extracted_images/page_7_img_4.jpeg" alt="Concept design 4" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Concept Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_7_img_1.png">
+              <img src="extracted_images/page_7_img_1.png" alt="Concept design 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_7_img_2.png">
+              <img src="extracted_images/page_7_img_2.png" alt="Concept design 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_7_img_3.jpeg">
+              <img src="extracted_images/page_7_img_3.jpeg" alt="Concept design 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_7_img_4.jpeg">
+              <img src="extracted_images/page_7_img_4.jpeg" alt="Concept design 4" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>UI/UX Website Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_9_img_2.png"><span class="shade"></span><img src="extracted_images/page_9_img_2.png" alt="UI/UX design 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_9_img_3.png"><span class="shade"></span><img src="extracted_images/page_9_img_3.png" alt="UI/UX design 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_9_img_4.png"><span class="shade"></span><img src="extracted_images/page_9_img_4.png" alt="UI/UX design 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_9_img_5.png"><span class="shade"></span><img src="extracted_images/page_9_img_5.png" alt="UI/UX design 4" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_10_img_2.png"><span class="shade"></span><img src="extracted_images/page_10_img_2.png" alt="UI/UX design 5" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">UI/UX Website Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_9_img_2.png">
+              <img src="extracted_images/page_9_img_2.png" alt="UI/UX design 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_9_img_3.png">
+              <img src="extracted_images/page_9_img_3.png" alt="UI/UX design 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_9_img_4.png">
+              <img src="extracted_images/page_9_img_4.png" alt="UI/UX design 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_9_img_5.png">
+              <img src="extracted_images/page_9_img_5.png" alt="UI/UX design 4" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_10_img_2.png">
+              <img src="extracted_images/page_10_img_2.png" alt="UI/UX design 5" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Menu Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/MENU 1.jpg"><span class="shade"></span><img src="extracted_images/MENU 1.jpg" alt="Menu design 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 2.jpg"><span class="shade"></span><img src="extracted_images/MENU 2.jpg" alt="Menu design 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 3.jpg"><span class="shade"></span><img src="extracted_images/MENU 3.jpg" alt="Menu design 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 4.jpg"><span class="shade"></span><img src="extracted_images/MENU 4.jpg" alt="Menu design 4" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 5.jpg"><span class="shade"></span><img src="extracted_images/MENU 5.jpg" alt="Menu design 5" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 6.jpg"><span class="shade"></span><img src="extracted_images/MENU 6.jpg" alt="Menu design 6" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 7.jpg"><span class="shade"></span><img src="extracted_images/MENU 7.jpg" alt="Menu design 7" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 8.jpg"><span class="shade"></span><img src="extracted_images/MENU 8.jpg" alt="Menu design 8" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 9.jpg"><span class="shade"></span><img src="extracted_images/MENU 9.jpg" alt="Menu design 9" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/MENU 10.jpg"><span class="shade"></span><img src="extracted_images/MENU 10.jpg" alt="Menu design 10" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Menu Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/MENU 1.jpg">
+              <img src="extracted_images/MENU 1.jpg" alt="Menu design 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 2.jpg">
+              <img src="extracted_images/MENU 2.jpg" alt="Menu design 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 3.jpg">
+              <img src="extracted_images/MENU 3.jpg" alt="Menu design 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 4.jpg">
+              <img src="extracted_images/MENU 4.jpg" alt="Menu design 4" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 5.jpg">
+              <img src="extracted_images/MENU 5.jpg" alt="Menu design 5" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 6.jpg">
+              <img src="extracted_images/MENU 6.jpg" alt="Menu design 6" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 7.jpg">
+              <img src="extracted_images/MENU 7.jpg" alt="Menu design 7" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 8.jpg">
+              <img src="extracted_images/MENU 8.jpg" alt="Menu design 8" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 9.jpg">
+              <img src="extracted_images/MENU 9.jpg" alt="Menu design 9" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/MENU 10.jpg">
+              <img src="extracted_images/MENU 10.jpg" alt="Menu design 10" loading="lazy" />
+            </div>
           </div>
         </div>
 
-        <div class="category reveal">
-          <h3>Flyer Design</h3>
-          <div class="grid">
-            <div class="card" data-img="extracted_images/page_6_img_4.png"><span class="shade"></span><img src="extracted_images/page_6_img_4.png" alt="Flyer design 1" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/page_6_img_5.png"><span class="shade"></span><img src="extracted_images/page_6_img_5.png" alt="Flyer design 2" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/flyers 1 (1).gif"><span class="shade"></span><img src="extracted_images/flyers 1 (1).gif" alt="Flyer design 3" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/flyers 1 (2).gif"><span class="shade"></span><img src="extracted_images/flyers 1 (2).gif" alt="Flyer design 4" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/flyers 1 (3) (1).gif"><span class="shade"></span><img src="extracted_images/flyers 1 (3) (1).gif" alt="Flyer design 5" loading="lazy" /></div>
-            <div class="card" data-img="extracted_images/creative 1.jpg"><span class="shade"></span><img src="extracted_images/creative 1.jpg" alt="Flyer design 6" loading="lazy" /></div>
+        <div class="project-category reveal">
+          <h3 class="project-category-title">Flyer Design</h3>
+          <div class="projects-grid">
+            <div class="project-card" data-img="extracted_images/page_6_img_4.png">
+              <img src="extracted_images/page_6_img_4.png" alt="Flyer design 1" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/page_6_img_5.png">
+              <img src="extracted_images/page_6_img_5.png" alt="Flyer design 2" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/flyers 1 (1).gif">
+              <img src="extracted_images/flyers 1 (1).gif" alt="Flyer design 3" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/flyers 1 (2).gif">
+              <img src="extracted_images/flyers 1 (2).gif" alt="Flyer design 4" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/flyers 1 (3) (1).gif">
+              <img src="extracted_images/flyers 1 (3) (1).gif" alt="Flyer design 5" loading="lazy" />
+            </div>
+            <div class="project-card" data-img="extracted_images/creative 1.jpg">
+              <img src="extracted_images/creative 1.jpg" alt="Flyer design 6" loading="lazy" />
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="contact divider" id="contact">
+    <section class="contact" id="contact">
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Get in Touch</h2>
-          <p class="section-subtitle">Send a note and I’ll get back quickly.</p>
+        <div class="section-header reveal">
+          <span class="section-label">Get in Touch</span>
+          <h2 class="section-title">Let's work together</h2>
+          <p class="section-subtitle">Send a note and I'll get back quickly.</p>
         </div>
         <div class="contact-grid">
-          <div class="info reveal">
-            <div>
-              <div class="label">Email</div>
-              <div class="value"><a href="mailto:ankitawork.design@gmail.com">ankitawork.design@gmail.com</a></div>
+          <div class="contact-info">
+            <div class="info-item reveal">
+              <div class="info-label">Email</div>
+              <div class="info-value">
+                <a href="mailto:ankitawork.design@gmail.com">ankitawork.design@gmail.com</a>
+              </div>
             </div>
-            <div>
-              <div class="label">Phone</div>
-              <div class="value"><a href="tel:+918224000991">+91 8224000991</a></div>
+            <div class="info-item reveal">
+              <div class="info-label">Phone</div>
+              <div class="info-value">
+                <a href="tel:+918224000991">+91 8224000991</a>
+              </div>
             </div>
-            <div>
-              <div class="label">Social</div>
-              <div class="value">
+            <div class="info-item reveal">
+              <div class="info-label">Social</div>
+              <div class="info-value">
                 <a href="https://www.linkedin.com/in/ankita-gurjar-60781a158/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <span style="margin:0 8px; color: var(--muted2);">/</span>
+                <span style="margin: 0 8px; color: var(--text-muted2);">/</span>
                 <a href="https://instagram.com/ankita_gurjar_?utm_medium=copy_link" target="_blank" rel="noopener noreferrer">Instagram</a>
               </div>
             </div>
           </div>
 
-          <form class="reveal" action="https://formsubmit.co/ankitawork.design@gmail.com" method="POST">
+          <form class="contact-form reveal" action="https://formsubmit.co/ankitawork.design@gmail.com" method="POST">
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_subject" value="New Portfolio Contact Form Submission" />
-            <div class="field">
-              <label class="label" for="name">Name</label>
-              <input id="name" name="name" type="text" required />
+            <div class="form-field">
+              <label class="form-label" for="name">Name</label>
+              <input class="form-input" id="name" name="name" type="text" required />
             </div>
-            <div class="field">
-              <label class="label" for="email">Email</label>
-              <input id="email" name="email" type="email" required />
+            <div class="form-field">
+              <label class="form-label" for="email">Email</label>
+              <input class="form-input" id="email" name="email" type="email" required />
             </div>
-            <div class="field">
-              <label class="label" for="message">Message</label>
-              <textarea id="message" name="message" required></textarea>
+            <div class="form-field">
+              <label class="form-label" for="message">Message</label>
+              <textarea class="form-textarea" id="message" name="message" required></textarea>
             </div>
-            <button class="btn primary" type="submit">Send Message</button>
+            <button class="btn btn-primary" type="submit">Send Message</button>
           </form>
         </div>
       </div>
@@ -739,240 +1252,284 @@
   </main>
 
   <footer>
-    <div class="container footer-row">
-      <div>© 2026 Ankita Gurjar</div>
-      <div class="socials">
-        <a href="https://www.linkedin.com/in/ankita-gurjar-60781a158/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://instagram.com/ankita_gurjar_?utm_medium=copy_link" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-text">© 2026 Ankita Gurjar. All rights reserved.</div>
+        <div class="footer-socials">
+          <a href="https://www.linkedin.com/in/ankita-gurjar-60781a158/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="https://instagram.com/ankita_gurjar_?utm_medium=copy_link" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">ig</a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Image preview">
-    <div class="modal-inner">
-      <button class="modal-close" id="modalClose" aria-label="Close image">×</button>
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
       <img id="modalImg" src="" alt="Full-size preview" />
     </div>
   </div>
 
-  <!-- 3D + motion (inspired by Framer-style portfolios like portavia) -->
+  <!-- 3D Background Effect -->
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const host = document.getElementById('hero3d');
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hero3d = document.getElementById('hero3d');
 
-    // If reduced motion, skip 3D entirely to respect user preference
-    if (!prefersReduced && host) {
+    if (!prefersReduced && hero3d) {
       const scene = new THREE.Scene();
-      scene.fog = new THREE.Fog(0x0a0a0a, 12, 42);
+      scene.fog = new THREE.Fog(0x000000, 10, 50);
 
-      const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 200);
-      camera.position.set(0, 0.4, 16);
+      const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+      camera.position.set(0, 0, 12);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
-      host.appendChild(renderer.domElement);
+      hero3d.appendChild(renderer.domElement);
 
       // Lights
-      const key = new THREE.DirectionalLight(0xffffff, 1.15);
-      key.position.set(6, 7, 8);
-      scene.add(key);
-      const fill = new THREE.DirectionalLight(0x88a0ff, 0.85);
-      fill.position.set(-7, -2, 6);
-      scene.add(fill);
-      scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+      scene.add(ambientLight);
 
-      // Floating “glass” orbs
-      const orbGeo = new THREE.IcosahedronGeometry(1.05, 2);
-      const orbMat = new THREE.MeshPhysicalMaterial({
+      const directionalLight1 = new THREE.DirectionalLight(0x667eea, 0.8);
+      directionalLight1.position.set(5, 5, 5);
+      scene.add(directionalLight1);
+
+      const directionalLight2 = new THREE.DirectionalLight(0xf093fb, 0.6);
+      directionalLight2.position.set(-5, -5, 5);
+      scene.add(directionalLight2);
+
+      // Glass orbs
+      const orbGeometry = new THREE.IcosahedronGeometry(1, 2);
+      const orbMaterial = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        roughness: 0.25,
-        metalness: 0.05,
-        transmission: 0.82,
-        thickness: 1.0,
-        ior: 1.25,
+        roughness: 0.2,
+        metalness: 0.1,
+        transmission: 0.9,
+        thickness: 1.5,
+        ior: 1.5,
         transparent: true,
-        opacity: 0.9,
-        clearcoat: 0.65,
-        clearcoatRoughness: 0.25
+        opacity: 0.8,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.2
       });
 
       const orbs = [];
-      const orbCount = 9;
+      const orbCount = 12;
+
       for (let i = 0; i < orbCount; i++) {
-        const m = new THREE.Mesh(orbGeo, orbMat.clone());
+        const material = orbMaterial.clone();
         const t = i / orbCount;
-        // scatter in a shallow “depth field”
-        m.position.set(
-          THREE.MathUtils.lerp(-8, 8, Math.random()),
-          THREE.MathUtils.lerp(-3.5, 3.5, Math.random()),
-          THREE.MathUtils.lerp(-10, 8, Math.random())
+
+        if (t < 0.33) {
+          material.color.setHex(0x667eea);
+        } else if (t < 0.66) {
+          material.color.setHex(0xf093fb);
+        } else {
+          material.color.setHex(0xffffff);
+        }
+
+        const orb = new THREE.Mesh(orbGeometry, material);
+        orb.position.set(
+          THREE.MathUtils.lerp(-10, 10, Math.random()),
+          THREE.MathUtils.lerp(-5, 5, Math.random()),
+          THREE.MathUtils.lerp(-15, 5, Math.random())
         );
-        m.scale.setScalar(THREE.MathUtils.lerp(0.55, 1.35, Math.random()));
-        // tint a couple of orbs to echo gradients
-        if (t < 0.33) m.material.color.setHex(0x88a0ff);
-        else if (t < 0.66) m.material.color.setHex(0xf093fb);
-        else m.material.color.setHex(0xffffff);
-        scene.add(m);
-        orbs.push({ mesh: m, seed: Math.random() * 1000 });
+        orb.scale.setScalar(THREE.MathUtils.lerp(0.6, 1.4, Math.random()));
+        scene.add(orb);
+        orbs.push({ mesh: orb, seed: Math.random() * 1000 });
       }
 
-      // Star-ish particle field
-      const ptsCount = 850;
-      const ptsGeo = new THREE.BufferGeometry();
-      const pos = new Float32Array(ptsCount * 3);
-      for (let i = 0; i < ptsCount; i++) {
-        pos[i * 3 + 0] = THREE.MathUtils.randFloatSpread(60);
-        pos[i * 3 + 1] = THREE.MathUtils.randFloatSpread(28);
-        pos[i * 3 + 2] = THREE.MathUtils.randFloat(-65, 8);
-      }
-      ptsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      const ptsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.65 });
-      const points = new THREE.Points(ptsGeo, ptsMat);
-      scene.add(points);
+      // Particles
+      const particleCount = 1000;
+      const particles = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
 
-      // Resize handling
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = THREE.MathUtils.randFloatSpread(100);
+        positions[i + 1] = THREE.MathUtils.randFloatSpread(50);
+        positions[i + 2] = THREE.MathUtils.randFloatSpread(80);
+      }
+
+      particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particleMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.1,
+        transparent: true,
+        opacity: 0.6
+      });
+      const particleSystem = new THREE.Points(particles, particleMaterial);
+      scene.add(particleSystem);
+
+      // Resize
       const resize = () => {
-        const rect = host.getBoundingClientRect();
-        const w = Math.max(1, Math.floor(rect.width));
-        const h = Math.max(1, Math.floor(rect.height));
-        camera.aspect = w / h;
+        const rect = hero3d.getBoundingClientRect();
+        const width = Math.max(1, Math.floor(rect.width));
+        const height = Math.max(1, Math.floor(rect.height));
+        camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        renderer.setSize(w, h, false);
+        renderer.setSize(width, height, false);
       };
       resize();
       window.addEventListener('resize', resize, { passive: true });
 
-      // Pointer parallax (very subtle)
-      let targetX = 0, targetY = 0;
-      const onMove = (e) => {
-        const x = (e.clientX / window.innerWidth) * 2 - 1;
-        const y = (e.clientY / window.innerHeight) * 2 - 1;
-        targetX = x;
-        targetY = y;
-      };
-      window.addEventListener('pointermove', onMove, { passive: true });
+      // Mouse parallax
+      let mouseX = 0, mouseY = 0;
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+      }, { passive: true });
 
-      // Animation loop (cap complexity)
-      let raf = 0;
+      // Animation
       const clock = new THREE.Clock();
+      let rafId = null;
 
-      const tick = () => {
-        raf = requestAnimationFrame(tick);
-        const t = clock.getElapsedTime();
+      const animate = () => {
+        rafId = requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
 
-        // Ease camera parallax
-        camera.position.x += (targetX * 0.55 - camera.position.x) * 0.03;
-        camera.position.y += (targetY * -0.35 + 0.4 - camera.position.y) * 0.03;
-        camera.lookAt(0, 0, -6);
+        // Camera parallax
+        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+        camera.lookAt(0, 0, 0);
 
-        // Orbs float & rotate
-        for (const o of orbs) {
-          const m = o.mesh;
-          const s = o.seed;
-          m.position.y += Math.sin(t * 0.7 + s) * 0.0025;
-          m.position.x += Math.cos(t * 0.55 + s) * 0.0015;
-          m.rotation.x += 0.002 + Math.sin(t * 0.2 + s) * 0.0005;
-          m.rotation.y += 0.003 + Math.cos(t * 0.2 + s) * 0.0005;
-        }
+        // Orb animation
+        orbs.forEach(({ mesh, seed }) => {
+          mesh.rotation.x += 0.002 + Math.sin(time * 0.3 + seed) * 0.001;
+          mesh.rotation.y += 0.003 + Math.cos(time * 0.2 + seed) * 0.001;
+          mesh.position.y += Math.sin(time * 0.5 + seed) * 0.003;
+          mesh.position.x += Math.cos(time * 0.4 + seed) * 0.002;
+        });
 
-        // Slow drift of particles
-        points.rotation.y = t * 0.03;
-        points.rotation.x = t * 0.01;
+        // Particle rotation
+        particleSystem.rotation.y = time * 0.02;
+        particleSystem.rotation.x = time * 0.01;
 
         renderer.render(scene, camera);
       };
 
-      // Pause rendering when hero not visible (perf)
-      const hero = document.querySelector('.hero');
-      const io3d = new IntersectionObserver((entries) => {
-        const isOn = entries.some(e => e.isIntersecting);
-        if (isOn && !raf) tick();
-        if (!isOn && raf) { cancelAnimationFrame(raf); raf = 0; }
-      }, { threshold: 0.05 });
-      if (hero) io3d.observe(hero);
-      tick();
+      // Intersection observer for performance
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !rafId) {
+            animate();
+          } else if (!entry.isIntersecting && rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
+        });
+      }, { threshold: 0.1 });
+
+      observer.observe(hero3d);
+      animate();
     }
   </script>
 
   <script>
-    // scroll indicator + nav state
-    const nav = document.getElementById('nav');
-    const scrollIndicator = document.getElementById('scrollIndicator');
+    // Scroll progress
+    const scrollProgress = document.getElementById('scrollProgress');
     window.addEventListener('scroll', () => {
-      const y = window.scrollY || 0;
-      if (y > 80) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-      const doc = document.documentElement;
-      const h = doc.scrollHeight - doc.clientHeight;
-      const p = h > 0 ? (y / h) * 100 : 0;
-      scrollIndicator.style.width = p + '%';
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      scrollProgress.style.width = scrolled + '%';
     });
 
-    // mobile menu
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Mobile menu
     const menuToggle = document.getElementById('menuToggle');
-    const mobilePanel = document.getElementById('mobilePanel');
+    const mobileMenu = document.getElementById('mobileMenu');
     menuToggle?.addEventListener('click', () => {
-      mobilePanel.classList.toggle('open');
-    });
-    mobilePanel?.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', () => mobilePanel.classList.remove('open'));
+      mobileMenu.classList.toggle('open');
     });
 
-    // smooth scroll (avoid href="#")
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', (e) => {
-        const href = a.getAttribute('href');
-        if (!href || href === '#') return;
-        const target = document.querySelector(href);
-        if (!target) return;
-        e.preventDefault();
-        const top = target.getBoundingClientRect().top + window.scrollY - 76;
-        window.scrollTo({ top, behavior: 'smooth' });
+    mobileMenu?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
       });
     });
 
-    // marquee duplication (make the track seamless)
-    function makeSeamless(trackId){
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#' || !href) return;
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Seamless scrollers
+    function duplicateScroller(trackId) {
       const track = document.getElementById(trackId);
       if (!track) return;
       const clone = track.cloneNode(true);
       clone.setAttribute('aria-hidden', 'true');
       track.parentElement.appendChild(clone);
     }
-    makeSeamless('skillsTrack');
-    makeSeamless('toolsTrack');
+    duplicateScroller('skillsTrack');
+    duplicateScroller('toolsTrack');
 
-    // modal gallery
+    // Reveal animations
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    reveals.forEach(reveal => revealObserver.observe(reveal));
+
+    // Modal
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modalImg');
     const modalClose = document.getElementById('modalClose');
-    function openModal(src){
+
+    function openModal(src) {
       modalImg.src = src;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
-    function closeModal(){
+
+    function closeModal() {
       modal.classList.remove('active');
       modalImg.src = '';
       document.body.style.overflow = '';
     }
-    document.querySelectorAll('.card[data-img]').forEach(card => {
-      card.addEventListener('click', () => openModal(card.getAttribute('data-img')));
-    });
-    modalClose?.addEventListener('click', closeModal);
-    modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-    // reveal on scroll
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(ent => {
-        if (ent.isIntersecting) ent.target.classList.add('on');
+    document.querySelectorAll('.project-card[data-img]').forEach(card => {
+      card.addEventListener('click', () => {
+        openModal(card.getAttribute('data-img'));
       });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    });
+
+    modalClose?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
   </script>
 </body>
 </html>
