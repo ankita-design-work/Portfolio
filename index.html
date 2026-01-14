@@ -1465,14 +1465,29 @@
       anchor.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
         if (href === '#' || !href) return;
-        const target = document.querySelector(href);
+        
+        // Prevent default early to avoid unexpected navigation on errors
+        e.preventDefault();
+        
+        // Wrap querySelector in try-catch to handle invalid CSS selectors
+        let target;
+        try {
+          target = document.querySelector(href);
+        } catch (error) {
+          // Invalid CSS selector - fall back to default behavior
+          window.location.href = href;
+          return;
+        }
+        
         if (target) {
-          e.preventDefault();
           const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
           window.scrollTo({
             top: offsetTop,
             behavior: 'smooth'
           });
+        } else {
+          // Target not found - fall back to default behavior
+          window.location.href = href;
         }
       });
     });
