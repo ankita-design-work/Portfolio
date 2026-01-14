@@ -1382,13 +1382,18 @@
         mouseY = (e.clientY / window.innerHeight) * 2 - 1;
       }, { passive: true });
 
-      // Animation
+      // Animation with pause/resume support
       const clock = new THREE.Clock();
       let rafId = null;
+      let pausedTimeOffset = 0;
+      let pauseStartTime = 0;
 
       const animate = () => {
         rafId = requestAnimationFrame(animate);
-        const time = clock.getElapsedTime();
+        
+        // Calculate time with pause offset to prevent jumps when resuming
+        const elapsedTime = clock.getElapsedTime();
+        const time = elapsedTime - pausedTimeOffset;
 
         // Camera parallax
         camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
@@ -1414,8 +1419,15 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !rafId) {
+            // Resume animation - add the paused duration to offset
+            if (pauseStartTime > 0) {
+              pausedTimeOffset += clock.getElapsedTime() - pauseStartTime;
+              pauseStartTime = 0;
+            }
             animate();
           } else if (!entry.isIntersecting && rafId) {
+            // Pause animation - record when we paused
+            pauseStartTime = clock.getElapsedTime();
             cancelAnimationFrame(rafId);
             rafId = null;
           }
@@ -1428,24 +1440,22 @@
   </script>
 
   <script>
-    // Scroll progress
+    // Combined scroll handler for performance optimization
     const scrollProgress = document.getElementById('scrollProgress');
+    const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       const scrolled = (winScroll / height) * 100;
       scrollProgress.style.width = scrolled + '%';
-    });
-
-    // Nav scroll effect
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
+      
+      // Nav scroll effect
       if (window.scrollY > 50) {
         nav.classList.add('scrolled');
       } else {
         nav.classList.remove('scrolled');
       }
-    });
+    }, { passive: true });
 
     // Mobile menu
     const menuToggle = document.getElementById('menuToggle');
@@ -1474,8 +1484,8 @@
         try {
           target = document.querySelector(href);
         } catch (error) {
-          // Invalid CSS selector - fall back to default behavior
-          window.location.href = href;
+          // Invalid CSS selector - silently fail (default already prevented)
+          console.warn('Invalid CSS selector for smooth scroll:', href);
           return;
         }
         
@@ -1486,8 +1496,8 @@
             behavior: 'smooth'
           });
         } else {
-          // Target not found - fall back to default behavior
-          window.location.href = href;
+          // Target not found - silently fail (default already prevented)
+          console.warn('Target element not found for smooth scroll:', href);
         }
       });
     });
