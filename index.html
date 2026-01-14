@@ -1463,11 +1463,11 @@
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
+        // Prevent default early to avoid unexpected navigation on errors or empty hashes
+        e.preventDefault();
+        
         const href = this.getAttribute('href');
         if (href === '#' || !href) return;
-        
-        // Prevent default early to avoid unexpected navigation on errors
-        e.preventDefault();
         
         // Wrap querySelector in try-catch to handle invalid CSS selectors
         let target;
