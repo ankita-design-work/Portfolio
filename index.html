@@ -1444,9 +1444,10 @@
     const scrollProgress = document.getElementById('scrollProgress');
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      // Use window.scrollY for consistent cross-browser scroll position
+      const winScroll = window.scrollY || document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
       scrollProgress.style.width = scrolled + '%';
       
       // Nav scroll effect
