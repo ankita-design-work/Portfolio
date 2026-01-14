@@ -38,6 +38,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      html { scroll-behavior: auto; }
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    }
     a { color: inherit; }
     .container{ max-width: var(--container); margin: 0 auto; padding: 0 var(--pad); }
 
@@ -121,6 +126,14 @@
       padding: 120px 0 64px;
       overflow:hidden;
     }
+    .hero-3d{
+      position:absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .92;
+    }
+    .hero-3d canvas{ width:100% !important; height:100% !important; display:block; }
     .hero::before{
       content:"";
       position:absolute; inset: 0;
@@ -130,6 +143,23 @@
       pointer-events:none;
     }
     .hero .inner{ position:relative; z-index:1; text-align:center; }
+    .hero .inner::after{
+      /* subtle glass plate behind hero copy */
+      content:"";
+      position:absolute;
+      inset: -22px;
+      background: rgba(10,10,10,.22);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+      z-index: -1;
+      opacity: .0;
+      transform: translateY(8px);
+      transition: opacity .35s var(--ease), transform .35s var(--ease);
+    }
+    .hero:hover .inner::after{
+      opacity: 1;
+      transform: translateY(0);
+    }
     h1{
       font-size: clamp(3rem, 7vw, 6rem);
       line-height: 1.05;
@@ -453,6 +483,7 @@
 
   <main id="home">
     <section class="hero">
+      <div class="hero-3d" aria-hidden="true" id="hero3d"></div>
       <div class="container inner">
         <h1>Ankita Gurjar</h1>
         <p class="sub">Visual Designer • Branding • Social Creatives • UI/UX</p>
@@ -723,6 +754,148 @@
       <img id="modalImg" src="" alt="Full-size preview" />
     </div>
   </div>
+
+  <!-- 3D + motion (inspired by Framer-style portfolios like portavia) -->
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const host = document.getElementById('hero3d');
+
+    // If reduced motion, skip 3D entirely to respect user preference
+    if (!prefersReduced && host) {
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x0a0a0a, 12, 42);
+
+      const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 200);
+      camera.position.set(0, 0.4, 16);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      renderer.setClearColor(0x000000, 0);
+      host.appendChild(renderer.domElement);
+
+      // Lights
+      const key = new THREE.DirectionalLight(0xffffff, 1.15);
+      key.position.set(6, 7, 8);
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0x88a0ff, 0.85);
+      fill.position.set(-7, -2, 6);
+      scene.add(fill);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+
+      // Floating “glass” orbs
+      const orbGeo = new THREE.IcosahedronGeometry(1.05, 2);
+      const orbMat = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        roughness: 0.25,
+        metalness: 0.05,
+        transmission: 0.82,
+        thickness: 1.0,
+        ior: 1.25,
+        transparent: true,
+        opacity: 0.9,
+        clearcoat: 0.65,
+        clearcoatRoughness: 0.25
+      });
+
+      const orbs = [];
+      const orbCount = 9;
+      for (let i = 0; i < orbCount; i++) {
+        const m = new THREE.Mesh(orbGeo, orbMat.clone());
+        const t = i / orbCount;
+        // scatter in a shallow “depth field”
+        m.position.set(
+          THREE.MathUtils.lerp(-8, 8, Math.random()),
+          THREE.MathUtils.lerp(-3.5, 3.5, Math.random()),
+          THREE.MathUtils.lerp(-10, 8, Math.random())
+        );
+        m.scale.setScalar(THREE.MathUtils.lerp(0.55, 1.35, Math.random()));
+        // tint a couple of orbs to echo gradients
+        if (t < 0.33) m.material.color.setHex(0x88a0ff);
+        else if (t < 0.66) m.material.color.setHex(0xf093fb);
+        else m.material.color.setHex(0xffffff);
+        scene.add(m);
+        orbs.push({ mesh: m, seed: Math.random() * 1000 });
+      }
+
+      // Star-ish particle field
+      const ptsCount = 850;
+      const ptsGeo = new THREE.BufferGeometry();
+      const pos = new Float32Array(ptsCount * 3);
+      for (let i = 0; i < ptsCount; i++) {
+        pos[i * 3 + 0] = THREE.MathUtils.randFloatSpread(60);
+        pos[i * 3 + 1] = THREE.MathUtils.randFloatSpread(28);
+        pos[i * 3 + 2] = THREE.MathUtils.randFloat(-65, 8);
+      }
+      ptsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const ptsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.65 });
+      const points = new THREE.Points(ptsGeo, ptsMat);
+      scene.add(points);
+
+      // Resize handling
+      const resize = () => {
+        const rect = host.getBoundingClientRect();
+        const w = Math.max(1, Math.floor(rect.width));
+        const h = Math.max(1, Math.floor(rect.height));
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+      };
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      // Pointer parallax (very subtle)
+      let targetX = 0, targetY = 0;
+      const onMove = (e) => {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = (e.clientY / window.innerHeight) * 2 - 1;
+        targetX = x;
+        targetY = y;
+      };
+      window.addEventListener('pointermove', onMove, { passive: true });
+
+      // Animation loop (cap complexity)
+      let raf = 0;
+      const clock = new THREE.Clock();
+
+      const tick = () => {
+        raf = requestAnimationFrame(tick);
+        const t = clock.getElapsedTime();
+
+        // Ease camera parallax
+        camera.position.x += (targetX * 0.55 - camera.position.x) * 0.03;
+        camera.position.y += (targetY * -0.35 + 0.4 - camera.position.y) * 0.03;
+        camera.lookAt(0, 0, -6);
+
+        // Orbs float & rotate
+        for (const o of orbs) {
+          const m = o.mesh;
+          const s = o.seed;
+          m.position.y += Math.sin(t * 0.7 + s) * 0.0025;
+          m.position.x += Math.cos(t * 0.55 + s) * 0.0015;
+          m.rotation.x += 0.002 + Math.sin(t * 0.2 + s) * 0.0005;
+          m.rotation.y += 0.003 + Math.cos(t * 0.2 + s) * 0.0005;
+        }
+
+        // Slow drift of particles
+        points.rotation.y = t * 0.03;
+        points.rotation.x = t * 0.01;
+
+        renderer.render(scene, camera);
+      };
+
+      // Pause rendering when hero not visible (perf)
+      const hero = document.querySelector('.hero');
+      const io3d = new IntersectionObserver((entries) => {
+        const isOn = entries.some(e => e.isIntersecting);
+        if (isOn && !raf) tick();
+        if (!isOn && raf) { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.05 });
+      if (hero) io3d.observe(hero);
+      tick();
+    }
+  </script>
 
   <script>
     // scroll indicator + nav state
