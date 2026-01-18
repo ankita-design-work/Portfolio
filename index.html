@@ -134,24 +134,25 @@
       opacity: 0.8;
     }
 
+    .brand img,
     .brand svg {
       height: 40px;
       width: auto;
       display: block;
+      object-fit: contain;
     }
     
     .brand-logo {
-      width: 40px;
+      width: auto;
       height: 40px;
-    }
-    
-    .brand-logo-icon {
-      fill: currentColor;
       transition: transform 0.3s var(--ease);
+      filter: brightness(0) invert(1);
+      opacity: 0.95;
     }
     
-    .brand:hover .brand-logo-icon {
-      transform: rotate(15deg);
+    .brand:hover .brand-logo {
+      transform: scale(1.05);
+      opacity: 1;
     }
 
     .nav-links {
@@ -915,14 +916,17 @@
     }
 
     .footer-logo {
-      width: 32px;
+      width: auto;
       height: 32px;
       opacity: 0.5;
-      transition: opacity 0.3s var(--ease);
+      transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+      object-fit: contain;
+      filter: brightness(0) invert(1);
     }
     
     .footer-logo:hover {
       opacity: 0.8;
+      transform: scale(1.05);
     }
     
     .footer-text {
@@ -1078,14 +1082,7 @@
     <div class="container">
       <div class="nav-inner">
         <a href="#home" class="brand">
-          <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ankita Gurjar Logo">
-            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-            <path class="brand-logo-icon" d="M30 35L50 25L70 35V45L50 55L30 45V35Z" fill="currentColor"/>
-            <path class="brand-logo-icon" d="M30 55L50 65L70 55V65L50 75L30 65V55Z" fill="currentColor" opacity="0.8"/>
-            <circle cx="35" cy="40" r="3" fill="currentColor" opacity="0.6"/>
-            <circle cx="65" cy="40" r="3" fill="currentColor" opacity="0.6"/>
-            <circle cx="50" cy="50" r="4" fill="currentColor"/>
-          </svg>
+          <img src="extracted_images/Ankita Logo (1).png" alt="Ankita Gurjar" class="brand-logo" />
         </a>
         <nav>
           <ul class="nav-links">
@@ -1710,14 +1707,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-text">
-          <svg class="footer-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-            <path d="M30 35L50 25L70 35V45L50 55L30 45V35Z" fill="currentColor"/>
-            <path d="M30 55L50 65L70 55V65L50 75L30 65V55Z" fill="currentColor" opacity="0.8"/>
-            <circle cx="35" cy="40" r="3" fill="currentColor" opacity="0.6"/>
-            <circle cx="65" cy="40" r="3" fill="currentColor" opacity="0.6"/>
-            <circle cx="50" cy="50" r="4" fill="currentColor"/>
-          </svg>
+          <img src="extracted_images/Ankita Logo (2).png" alt="" class="footer-logo" aria-hidden="true" />
           <span>© 2026 Ankita Gurjar. All rights reserved.</span>
         </div>
         <div class="footer-socials">
