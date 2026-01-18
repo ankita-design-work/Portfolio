@@ -34,6 +34,10 @@
       --border-hover: rgba(255, 255, 255, 0.2);
       --accent: #667eea;
       --accent2: #f093fb;
+      /* Warm tones for profile image harmony */
+      --warm-beige: #f5e6d3;
+      --warm-yellow: #f4d03f;
+      --warm-cream: #fef9e7;
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --container: 1400px;
@@ -85,7 +89,7 @@
       width: 0%;
       height: 2px;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
-      z-index: 10000;
+      z-index: 9999;
       transition: width 0.1s linear;
     }
 
@@ -130,10 +134,24 @@
       opacity: 0.8;
     }
 
-    .brand img {
+    .brand svg {
       height: 40px;
       width: auto;
       display: block;
+    }
+    
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .brand-logo-icon {
+      fill: currentColor;
+      transition: transform 0.3s var(--ease);
+    }
+    
+    .brand:hover .brand-logo-icon {
+      transform: rotate(15deg);
     }
 
     .nav-links {
@@ -236,7 +254,8 @@
       inset: 0;
       background:
         radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.12) 0%, transparent 50%);
+        radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(244, 208, 63, 0.08) 0%, transparent 60%);
     }
 
     .hero-3d {
@@ -379,12 +398,13 @@
     /* About Section */
     .about {
       background: var(--bg2);
+      position: relative;
     }
 
     .about-grid {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 60px;
+      gap: 80px;
       align-items: center;
     }
 
@@ -400,22 +420,43 @@
 
     .about-visual {
       position: relative;
-      border-radius: 24px;
+      border-radius: 0;
       overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--card);
-      aspect-ratio: 4/5;
+      border: none;
+      background: transparent;
+      aspect-ratio: 3/4;
+      box-shadow: none;
+      mix-blend-mode: normal;
+    }
+    
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.03) 100%);
+      opacity: 1;
+      transition: opacity 0.4s var(--ease);
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .about-visual:hover::before {
+      opacity: 0.7;
     }
 
     .about-visual img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.6s var(--ease);
+      transition: transform 0.8s var(--ease-out), filter 0.8s var(--ease);
+      filter: grayscale(15%) brightness(0.98) contrast(1.02);
+      position: relative;
+      z-index: 0;
     }
 
     .about-visual:hover img {
-      transform: scale(1.05);
+      transform: scale(1.02);
+      filter: grayscale(0%) brightness(1) contrast(1.05);
     }
 
     /* Skills & Tools Scrollers */
@@ -717,9 +758,23 @@
       flex-wrap: wrap;
     }
 
+    .footer-logo {
+      width: 32px;
+      height: 32px;
+      opacity: 0.5;
+      transition: opacity 0.3s var(--ease);
+    }
+    
+    .footer-logo:hover {
+      opacity: 0.8;
+    }
+    
     .footer-text {
       color: var(--text-muted);
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .footer-socials {
@@ -751,7 +806,7 @@
     .modal {
       position: fixed;
       inset: 0;
-      z-index: 10000;
+      z-index: 10001;
       display: none;
       align-items: center;
       justify-content: center;
@@ -867,7 +922,14 @@
     <div class="container">
       <div class="nav-inner">
         <a href="#home" class="brand">
-          <img src="extracted_images/page_1_img_2.png" alt="Ankita Gurjar" />
+          <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ankita Gurjar Logo">
+            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+            <path class="brand-logo-icon" d="M30 35L50 25L70 35V45L50 55L30 45V35Z" fill="currentColor"/>
+            <path class="brand-logo-icon" d="M30 55L50 65L70 55V65L50 75L30 65V55Z" fill="currentColor" opacity="0.8"/>
+            <circle cx="35" cy="40" r="3" fill="currentColor" opacity="0.6"/>
+            <circle cx="65" cy="40" r="3" fill="currentColor" opacity="0.6"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor"/>
+          </svg>
         </a>
         <nav>
           <ul class="nav-links">
@@ -922,7 +984,7 @@
             <p>Let's collaborate to transform your vision into bold, memorable visual narratives that leave a lasting impression.</p>
           </div>
           <div class="about-visual reveal">
-            <img src="extracted_images/page_2_img_2.jpeg" alt="Ankita Gurjar" />
+            <img src="extracted_images/WhatsApp Image 2026-01-18 at 17.32.49.jpeg" alt="Ankita Gurjar" />
           </div>
         </div>
       </div>
@@ -1254,7 +1316,17 @@
   <footer>
     <div class="container">
       <div class="footer-content">
-        <div class="footer-text">© 2026 Ankita Gurjar. All rights reserved.</div>
+        <div class="footer-text">
+          <svg class="footer-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+            <path d="M30 35L50 25L70 35V45L50 55L30 45V35Z" fill="currentColor"/>
+            <path d="M30 55L50 65L70 55V65L50 75L30 65V55Z" fill="currentColor" opacity="0.8"/>
+            <circle cx="35" cy="40" r="3" fill="currentColor" opacity="0.6"/>
+            <circle cx="65" cy="40" r="3" fill="currentColor" opacity="0.6"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor"/>
+          </svg>
+          <span>© 2026 Ankita Gurjar. All rights reserved.</span>
+        </div>
         <div class="footer-socials">
           <a href="https://www.linkedin.com/in/ankita-gurjar-60781a158/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">in</a>
           <a href="https://instagram.com/ankita_gurjar_?utm_medium=copy_link" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">ig</a>
@@ -1285,7 +1357,7 @@
       camera.position.set(0, 0, 12);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.setClearColor(0x000000, 0);
       hero3d.appendChild(renderer.domElement);
 
@@ -1491,7 +1563,10 @@
         }
         
         if (target) {
-          const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+          // Calculate navigation height dynamically for accurate scroll offset
+          const nav = document.getElementById('nav');
+          const navHeight = nav ? nav.offsetHeight : 80;
+          const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
           window.scrollTo({
             top: offsetTop,
             behavior: 'smooth'
